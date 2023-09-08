@@ -1,3 +1,4 @@
 raw_data/
 __pycache__
 data/train.csv
+train.csv
