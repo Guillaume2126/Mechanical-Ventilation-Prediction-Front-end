@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 import requests
+import json
 from Api_request import make_api_request
 
 # ------- 1 - Title and info session ---------
