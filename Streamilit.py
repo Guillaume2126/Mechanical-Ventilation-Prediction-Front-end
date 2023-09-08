@@ -175,7 +175,6 @@ if button_data_provide == "I don't have a breath_id but I have all the features"
                     #End of API call and display of the answer
                     try:
                         response_data = json.loads(response_text)
-
                         pressure = response_data.get("pressure", "")
                         st.write(f"The predicted pressure is {pressure}")
                     except json.JSONDecodeError:
