@@ -5,6 +5,4 @@ pandas
 numpy
 streamlit
 requests
-bs4
-import
 
