@@ -3,7 +3,8 @@ import numpy as np
 import streamlit as st
 import requests
 import json
-from Api_request import make_api_request
+from Api_request import make_api_request_with_features, make_api_request_with_id
+import time
 
 # ------- 1 - Title and info session ---------
 #Title
@@ -11,7 +12,7 @@ st.title('Mechanical Ventilation Predictor')
 #Subtitle
 st.subheader('How does this predictor works ?')
 #Aim of the predictor
-st.write('The aim of this predictor is to forecast the pressure inside lungs :lungs: using differents features. Here is how it work:' )
+st.write('The aim of this predictor is to forecast the pressure inside lungs :lungs: using differents features. Here is how it works:' )
 st.write("1️⃣ First, **have a look** at the different features required")
 st.write("2️⃣ Then, **select** the kind of feature that you want to provide")
 st.write("3️⃣ **Provide the data** using the method of your choice")
@@ -24,7 +25,7 @@ st.write("4️⃣ Click on **'Get prediction'**	 ")
 #Title
 st.info('1️⃣ In order to use this predictor, you will need the following features:')
 #Sentence
-"""Here are the list of features use for the calculation:"""
+"""Here are the list of features used for the calculation:"""
 # Making two columns with different widths
 col1, col2 = st.columns([1,6])
 #Filling the column 1 with the different features
@@ -75,10 +76,55 @@ if button_data_provide == "I have a breath_id":
     breath_id = st.text_input('Enter your breath_id') #Input field
     predict_with_breath_id = st.button(":blue[Get prediction]") #Button to get prediction
     if predict_with_breath_id:
-        params = dict(breath_id=breath_id) #Params to send to API
-        api_url = 'https://mvpapi-azdjuqy4ca-ew.a.run.app/docs#/default/predict_predict_get' #TODO API url (wrong url)
-        response = requests.get(api_url, params=params).json() #TODO API response
-        st.write(response) #TODO To complete once I have the API
+        #Loading bar
+        progress_text = "Operation in progress. Please wait."
+        my_bar = st.progress(0, text=progress_text)
+        for percent_complete in range(100):
+            time.sleep(0.1)
+            my_bar.progress(percent_complete + 1, text=progress_text)
+        #Waiting circle
+        with st.spinner('Wait for it...'):
+            time.sleep(5)
+        with st.spinner('Your results are coming...'):
+            time.sleep(5)
+        with st.spinner('Sorry, I am slow to load but the prediction will be perfect !!'):
+            time.sleep(5)
+        st.success('Done!')
+
+        #API call
+        pressure = make_api_request_with_id(breath_id)
+        time_step=[ 0.0, 0.0331871509552001, 0.0663647651672363, 0.0997838973999023,
+                   0.1331243515014648, 0.1665058135986328, 0.1999211311340332, 0.233269453048706,
+                   0.2667148113250732, 0.3001444339752197, 0.3334481716156006, 0.3667137622833252,
+                   0.4000871181488037, 0.4334573745727539, 0.4668083190917969, 0.5001921653747559,
+                   0.5335805416107178, 0.5669963359832764, 0.6003098487854004, 0.6336038112640381,
+                   0.667017936706543, 0.7003989219665527, 0.7338323593139648, 0.7672531604766846,
+                   0.8007259368896484, 0.8341472148895264, 0.8675739765167236, 0.9009172916412354,
+                   0.9343087673187256, 0.967742681503296, 1.0011558532714844, 1.0346879959106443,
+                   1.0681016445159912, 1.1015379428863523, 1.1348886489868164, 1.168378829956055,
+                   1.2017686367034912, 1.235328197479248, 1.2686767578125, 1.3019189834594729,
+                   1.335435390472412, 1.3688392639160156, 1.4022314548492432, 1.4356489181518557,
+                   1.4690682888031006, 1.5024497509002686, 1.5358901023864746, 1.5694541931152344,
+                   1.602830410003662, 1.636289119720459, 1.6696226596832275, 1.7029592990875244,
+                   1.7363479137420654, 1.7697343826293943, 1.803203582763672, 1.8365991115570068,
+                   1.869977235794068, 1.903436183929444, 1.9368293285369875, 1.970158576965332,
+                   2.0035817623138428, 2.0370094776153564, 2.0702223777771, 2.1036837100982666,
+                   2.1370668411254883, 2.170450448989868, 2.203945636749268, 2.23746919631958,
+                   2.270882368087769, 2.304311990737915, 2.3376832008361816, 2.371119737625122,
+                   2.4044580459594727, 2.4377858638763428, 2.471191644668579, 2.504603147506714,
+                   2.537960767745972, 2.571407556533813, 2.604744434356689, 2.638017416000366]
+        df = pd.DataFrame(pressure)
+        df["time_step"]=time_step
+        st.area_chart(df,
+                    x="time_step",
+                    y=["actual_pressure", "predicted_pressure"],
+                    color=['#FF0000','#CCEEFF']  # Optional
+                )
+        st.line_chart(df,
+                    x="time_step",
+                    y=["actual_pressure", "predicted_pressure"],
+                    color=['#FF0000','#CCEEFF']  # Optional
+                )
 
 #-------- 4-B- If the user choose "I don't have a breath_id but I have all the features", add some field to fill and do API call --------
 if button_data_provide == "I don't have a breath_id but I have all the features":
@@ -87,7 +133,7 @@ if button_data_provide == "I don't have a breath_id but I have all the features"
     data_selection = st.radio('Choose a way to provide data:', ["Provide features manually", "Import CSV"])
 
     # -------- 4-B-1- If user choose : provide data manually ---------
-    if data_selection=="Provide features manually":
+    if data_selection=="Provide features manually": #TODO: Most important, do we predict value one by one or by 80, if 80, I need time_step
         #Creation of three columns
         col1, col2, col3 = st.columns([5,1,5])
         #Selection of R and C in two different columns
@@ -129,6 +175,7 @@ if button_data_provide == "I don't have a breath_id but I have all the features"
                     #End of API call and display of the answer
                     try:
                         response_data = json.loads(response_text)
+
                         pressure = response_data.get("pressure", "")
                         st.write(f"The predicted pressure is {pressure}")
                     except json.JSONDecodeError:
@@ -143,7 +190,7 @@ if button_data_provide == "I don't have a breath_id but I have all the features"
                          help="Please provide a file with 4 columns: 'R', 'C', 'u_in' and 'u_out'",
                          type=["csv"]) #Add an if condition if the file is not a csv
         if up_file:
-            st.success("File upload successfully!")
+            st.success("File uploaded successfully!")
 
         get_prediction_using_csv = st.button(":blue[Get prediction]")
 
@@ -153,7 +200,7 @@ if button_data_provide == "I don't have a breath_id but I have all the features"
             list_of_pressure = []
             list_of_time_step = []
             for i in range(len(df_to_predict)):
-                pressure = make_api_request(df_to_predict["R"][i],
+                pressure = make_api_request_with_features(df_to_predict["R"][i],
                                 df_to_predict["C"][i],
                                 df_to_predict["u_in"][i],
                                 df_to_predict["u_out"][i])
