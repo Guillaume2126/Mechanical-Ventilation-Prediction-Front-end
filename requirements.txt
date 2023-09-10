@@ -5,8 +5,5 @@ pandas
 numpy
 streamlit
 requests
-<<<<<<< HEAD
 time
-=======
-
->>>>>>> 1b6c3b9a11a347022de4d746d014589988912399
+streamlit_extras

@@ -5,6 +5,8 @@ import requests
 import json
 from Api_request import make_api_request_with_features, make_api_request_with_id
 import time
+from streamlit_extras.stoggle import stoggle
+from streamlit_extras.tags import tagger_component
 
 # ------- 1 - Title and info session ---------
 #Title
@@ -25,18 +27,30 @@ st.write("4️⃣ Click on **'Get prediction'**	 ")
 #Title
 st.info('1️⃣ In order to use this predictor, you will need the following features:')
 #Sentence
+tagger_component(
+    "",
+    ["Here are the list of features used for the calculation:"],
+    color_name=["blue"],
+)
 """Here are the list of features used for the calculation:"""
 # Making two columns with different widths
 col1, col2 = st.columns([1,6])
+col3, col4 = st.columns([1,1])
 #Filling the column 1 with the different features
 with col1:
      st.write('	:small_blue_diamond: **R**')
+
+stoggle("More explanations about R ?",
+    """put a beautiful picture of what R is""",
+)
+with col1:
      st.write('	:small_blue_diamond: **C**')
      st.write('	:small_blue_diamond: **u_in**')
      st.write('	:small_blue_diamond: **u_out**')
 #TODO Filling the column 2 with the description of the different features
 with col2:
     st.caption("Change in pressure per change in flow (air volume per time)")
+
     st.caption("Change in volume per change in pressure")
     st.caption("Explanation of u_in")
     st.caption("Explanation of u_out")
