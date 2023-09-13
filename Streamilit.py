@@ -19,15 +19,15 @@ st.set_page_config (page_title='Mechanical ventilation')
 #Title
 st.title('Ventilation Pressure Predictor')
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Project", "Predictor"])
+page = st.sidebar.radio("Go to", ["Predictor", "Our project"])
 
-if page == "Project":
+if page == "Our project":
     st.subheader("What is this project about ? 🤔")
     st.write("""What do doctors do when a patient has trouble breathing?
              They use a ventilator to pump oxygen into a sedated patient's lungs
              via a tube in the windpipe. **Mechanical ventilation** is a clinician-intensive procedure.
              Developing new methods for controlling mechanical ventilators is prohibitively
-             expensive.💰""")
+             expensive💰""")
     st.write(" ")
 
     st.write("""In this project, we have **simulated** a ventilator connected to a
@@ -210,59 +210,57 @@ elif page=="Predictor":
                 with col2:
                     progress_text = "Operation in progress. Please wait."
                     my_bar = st.progress(0, text=progress_text)
-                    for percent_complete in range(4):
+                    for percent_complete in range(2):
                         with col2:
                             with st_lottie_spinner(lottie_json, height = 200, width = 200, key=percent_complete):
                                 time.sleep(2.5)
-                            time.sleep(0.01)
-                            my_bar.progress((percent_complete+1)*25, text=progress_text)
-                my_bar.empty()
-
-                st.success('Here are your results 🔽')
+                                my_bar.progress((percent_complete+1)*50, text=progress_text)
+                my_bar.empty() #Remove waiting bar
+                st.success('Here are your results 🔽') #Success message
 
             #Read csv
             df_to_predict = pd.read_csv(up_file)
 
             #API call
-            list_of_pressure = []
-            list_of_time_step = []
             for i in range(len(df_to_predict)):
-                pressure = make_api_request_with_features(df_to_predict["R"][i],
-                                df_to_predict["C"][i],
-                                df_to_predict["u_in"][i],
-                                df_to_predict["u_out"][i])
+                pressure = make_api_request_with_features(df_to_predict)
+                # will return dict(time_step = time_column, actual_pressure = actual_pressure,predicted_pressure = loaded_model.predict(X).reshape(80))
                 if pressure is not None:
-                    list_of_pressure.append(pressure)
-                    list_of_time_step.append(df_to_predict["time_step"][i])
-                else:
-                    list_of_pressure.append("API doesnt work")
 
-            df = pd.DataFrame({'actual_pressure':df_to_predict["pressure"], "predicted_pressure":list_of_pressure, 'time_step': list_of_time_step})
-            mae = mean_absolute_error(df["actual_pressure"], df["predicted_pressure"])
+                    df = pd.DataFrame(pressure)
+                    mae = mean_absolute_error(df["actual_pressure"], df["predicted_pressure"])
 
-            # Create graph using matplotlib
-            fig, ax = plt.subplots()
-            ax.plot(df["time_step"], df["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
-            #ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
-            ax.plot(df["time_step"], df["predicted_pressure"], "--", label="Predicted Pressure", color='#eb8634')
+                    # Create graph using matplotlib
+                    fig, ax = plt.subplots()
+                    ax.plot(df["time_step"], df["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
+                    #ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
+                    ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
 
-            # set y and x label
-            ax.set_ylabel("Pressure")
-            ax.set_xlabel("Time step")
+                    # set y and x label
+                    ax.set_ylabel("Pressure")
+                    ax.set_xlabel("Time step")
 
-            # Add legend, other and title
-            ax.legend(loc='upper left', bbox_to_anchor=(0.0, -0.1))
-            ax.grid(alpha=0.15) #Improve transparency of grid
-            ax.spines['top'].set_visible(False) #Remove top bar
-            ax.spines['right'].set_visible(False) #Remove right bar
-            fig.set_size_inches(10, 5) #Range 10, 5
-            plt.title(f"Mechanical Ventilation Prediction")
+                    # Add legend, other and title
+                    ax.legend(loc='upper left', bbox_to_anchor=(0.0, -0.1))
+                    ax.grid(alpha=0.15) #Improve transparency of grid
+                    ax.spines['top'].set_visible(False) #Remove top bar
+                    ax.spines['right'].set_visible(False) #Remove right bar
+                    fig.set_size_inches(10, 5) #Range 10, 5
+                    plt.title(f"Mechanical Ventilation Prediction - Breath ID={breath_id}")
 
-            #Add MAE
-            ratio_max_min = df["actual_pressure"].max()-(df["actual_pressure"].min())
-            same_size_rectangle = ((df["actual_pressure"].max())-(df["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
-            rectangle = Rectangle((1.53, df["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
-            ax.add_patch(rectangle)
-            plt.annotate(f'MAE = {mae}', xy=(1.6, df["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
-            # Add in Streamlit
-            st.pyplot(fig)
+                    #Add MAE
+                    ratio_max_min = df["actual_pressure"].max()-(df["actual_pressure"].min())
+                    same_size_rectangle = ((df["actual_pressure"].max())-(df["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
+                    rectangle = Rectangle((1.53, df["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
+                    ax.add_patch(rectangle)
+                    plt.annotate(f'MAE* = {mae}', xy=(1.6, df["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
+
+                    # Add in Streamlit
+                    st.pyplot(fig)
+                    st.write(" ")
+                    st.write("\* **MAE= (Mean Absolute Error)** can be used to measure how close something is from being correct. In our case, **MAE** represents the average difference between actual and predicted pressure. The smaller the better!")
+                    st.write(" ")
+
+
+            else:
+                st.write("API doesnt work")
