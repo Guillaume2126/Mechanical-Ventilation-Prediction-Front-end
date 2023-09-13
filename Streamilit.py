@@ -52,7 +52,8 @@ if page == "Project":
         github_url = "https://github.com/UKVeteran"
         st.markdown(f"[![GitHub](https://img.shields.io/badge/GitHub-Repository-red.svg)]({github_url})", unsafe_allow_html=True)
         linkedin_url = "https://www.linkedin.com/in/jmashfaque/"
-        st.markdown(f"[LinkedIn Profile]({linkedin_url})")
+        linkedin_logo = "https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
+        st.markdown(f'<a href="{linkedin_url}" target="_blank"><img src="{linkedin_logo}" alt="LinkedIn" width="50"></a>', unsafe_allow_html=True)
 
     with col2:
         image = st.image("GB_picture.jpg")
@@ -60,7 +61,9 @@ if page == "Project":
         st.markdown("<h4 style='text-align: center; color: green;'>Guillaume</h4>", unsafe_allow_html=True)
         st.markdown(f"[![GitHub](https://img.shields.io/badge/GitHub-Repository-green.svg)]({github_url})", unsafe_allow_html=True)
         linkedin_url = "https://www.linkedin.com/in/guillaumebretel/"
-        st.markdown(f"[LinkedIn Profile]({linkedin_url})")
+        linkedin_logo = "https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
+        st.markdown(f'<a href="{linkedin_url}" target="_blank"><img src="{linkedin_logo}" alt="LinkedIn" width="50"></a>', unsafe_allow_html=True)
+
 
     with col3:
         image = st.image("Dilara3.jpg")
@@ -68,7 +71,9 @@ if page == "Project":
         st.markdown("<h4 style='text-align: center; color: blue;'>Dilara</h4>", unsafe_allow_html=True)
         st.markdown(f"[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue.svg)]({github_url})", unsafe_allow_html=True)
         linkedin_url = "https://www.linkedin.com/in/dilarahaciali/"
-        st.markdown(f"[LinkedIn Profile]({linkedin_url})")
+        linkedin_logo = "https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
+        st.markdown(f'<a href="{linkedin_url}" target="_blank"><img src="{linkedin_logo}" alt="LinkedIn" width="50"></a>', unsafe_allow_html=True)
+
 
     with col4:
         image = st.image("Ihap.jpg")
@@ -76,7 +81,8 @@ if page == "Project":
         st.markdown("<h4 style='text-align: center; color: orange;'>Ihap</h4>", unsafe_allow_html=True)
         st.markdown(f"[![GitHub](https://img.shields.io/badge/GitHub-Repository-orange.svg)]({github_url})", unsafe_allow_html=True)
         linkedin_url = "https://www.linkedin.com/in/mustafaihapsubasi/"
-        st.markdown(f"[LinkedIn Profile]({linkedin_url})")
+        linkedin_logo = "https://content.linkedin.com/content/dam/me/business/en-us/amp/brand-site/v2/bg/LI-Bug.svg.original.svg"
+        st.markdown(f'<a href="{linkedin_url}" target="_blank"><img src="{linkedin_logo}" alt="LinkedIn" width="50"></a>', unsafe_allow_html=True)
 
 elif page=="Predictor":
     #Subtitle
