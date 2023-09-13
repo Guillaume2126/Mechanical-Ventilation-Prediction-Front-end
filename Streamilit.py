@@ -37,7 +37,7 @@ if page == "Project":
              the burden on clinicians during these novel times and beyond. **As a result, ventilator treatments
              may become more widely available to help patients breathe.**""")
     st.write(" ")
-    st.write("If you want more information check this out [link](https://github.com/UKVeteran/Mechanical-Ventilation-Prediction/blob/7be8a38d9b6db60aff2aef91a2c664e801760299/README.md#L4)")
+    st.write("If you want more information, check out this [link](https://github.com/UKVeteran/Mechanical-Ventilation-Prediction/blob/7be8a38d9b6db60aff2aef91a2c664e801760299/README.md#L4)")
 
 
 
