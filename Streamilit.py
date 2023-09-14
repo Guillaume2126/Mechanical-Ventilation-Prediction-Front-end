@@ -105,8 +105,8 @@ elif page=="Predictor":
     st.info('1️⃣ Select the type of data')
     #List of three choices
     #TODO: help with breath ID ?
-    button_data_provide = st.selectbox('Pick one:', ["","As a breath ID",
-                                                    "As a csv file with all features",
+    button_data_provide = st.selectbox('Pick one:', ["","As a BreathID",
+                                                    "As a CSV file with all features",
                                                     "Neither"],
                                 )
     #Conditions depending of the choices of kind of features:
@@ -124,8 +124,8 @@ elif page=="Predictor":
         return r.json()
 
     #-------- 4-A- If the user choose "I have a breath_id", add a text field to fill and do API call --------
-    if button_data_provide == "As a breath ID":
-        st.info('2️⃣ Please provide a breath ID') #Title
+    if button_data_provide == "As a BreathID":
+        st.info('2️⃣ Please provide a BreathID') #Title
         breath_ids = st.multiselect('Multiselect', list(range(1, 201)), max_selections=5) #Input field
         predict_with_breath_id = st.button(":blue[Get prediction]") #Button to get prediction
         if predict_with_breath_id:
@@ -205,7 +205,7 @@ elif page=="Predictor":
                 st.error("Please, don't forget to enter at least one breath_id")
 
     #-------- 4-B- If the user choose "I don't have a breath_id but I have all the features", add some field to fill and do API call --------
-    if button_data_provide == "As a csv file with all features":
+    if button_data_provide == "As a CSV file with all features":
         st.info('2️⃣ Please provide your features as CSV file:') #Title
 
         up_file = st.file_uploader("Please upload a file with 5 columns: 'R', 'C', 'u_in', 'u_out' and 'pressure'",
