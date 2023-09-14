@@ -93,7 +93,7 @@ elif page=="Predictor":
     #Title
     st.info('1️⃣ Select the type of data')
     #List of three choices
-    button_data_provide = st.selectbox('Pick one:', ["","As a breath_id",
+    button_data_provide = st.selectbox('Pick one:', ["","As a breath ID",
                                                     "As a csv file with all features",
                                                     "Neither"],
                                 )
@@ -112,8 +112,8 @@ elif page=="Predictor":
         return r.json()
 
     #-------- 4-A- If the user choose "I have a breath_id", add a text field to fill and do API call --------
-    if button_data_provide == "As a breath_id":
-        st.info('2️⃣ Please provide a breath_id') #Title
+    if button_data_provide == "As a breath ID":
+        st.info('2️⃣ Please provide a breath ID') #Title
         breath_ids = st.multiselect('Multiselect', list(range(1, 201)), max_selections=5) #Input field
         predict_with_breath_id = st.button(":blue[Get prediction]") #Button to get prediction
         if predict_with_breath_id:
@@ -205,7 +205,7 @@ elif page=="Predictor":
 
             if get_prediction_using_csv:
                 #waiting animation(lungs and bar)
-                col1, col2, col3 = st.columns([1,1, 1])
+                col1, col2, col3 = st.columns([1,1,1])
                 lottie_json = load_lottieurl("https://lottie.host/190f6b9e-80da-496f-a5b7-7374254d7634/TF29EiWHw9.json")
                 with col2:
                     progress_text = "Operation in progress. Please wait."
