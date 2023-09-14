@@ -93,6 +93,7 @@ elif page=="Predictor":
     #Title
     st.info('1️⃣ Select the type of data')
     #List of three choices
+    #TODO: help with breath ID ?
     button_data_provide = st.selectbox('Pick one:', ["","As a breath ID",
                                                     "As a csv file with all features",
                                                     "Neither"],
