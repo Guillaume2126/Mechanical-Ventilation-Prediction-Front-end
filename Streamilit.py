@@ -44,7 +44,7 @@ if page == "Our Project":
     st.write(" ")
     st.write(" ")
     st.write("Contact the members of the team:")
-
+    #This markdown remove the double arrows on top right of the images
     st.markdown("""
                 <style>
                 .css-6awftf {
@@ -131,7 +131,7 @@ elif page=="Predictor":
         if predict_with_breath_id:
             if breath_ids:
                 #Waiting animation (lungs + bar)
-                col1, col2, col3 = st.columns([1,1, 1])
+                col1, col2, col3 = st.columns([1,1,1])
                 lottie_json = load_lottieurl("https://lottie.host/190f6b9e-80da-496f-a5b7-7374254d7634/TF29EiWHw9.json")
                 with col2:
                     progress_text = "Operation in progress. Please wait."
