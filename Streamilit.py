@@ -19,9 +19,9 @@ st.set_page_config (page_title='Mechanical ventilation')
 #Title
 st.title('Ventilation Pressure Predictor')
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Predictor", "Our project"])
+page = st.sidebar.radio("Go to", ["Predictor", "Our Project"])
 
-if page == "Our project":
+if page == "Our Project":
     st.subheader("What is this project about ? 🤔")
     st.write("""What do doctors do when a patient has trouble breathing?
              They use a ventilator to pump oxygen into a sedated patient's lungs
