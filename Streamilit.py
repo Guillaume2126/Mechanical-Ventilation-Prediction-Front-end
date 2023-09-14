@@ -44,6 +44,17 @@ if page == "Our Project":
     st.write(" ")
     st.write(" ")
     st.write("Contact the members of the team:")
+
+    st.markdown("""
+                <style>
+                .css-6awftf {
+                    display: none;
+                    visibility: hidden;
+                }
+
+                </style>
+                """, unsafe_allow_html=True)
+
     col1, col2, col3, col4 = st.columns(4, gap="small")
     with col1:
         image = st.image("Johar.jpg")
