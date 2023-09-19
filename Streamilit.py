@@ -126,7 +126,7 @@ elif page=="Predictor":
     #-------- 4-A- If the user choose "I have a breath_id", add a text field to fill and do API call --------
     if button_data_provide == "As a BreathID":
         st.info('2️⃣ Please provide a BreathID') #Title
-        breath_ids = st.multiselect('Multiselect', list(range(1, 201)), max_selections=5) #Input field
+        breath_ids = st.multiselect('Select up to 5 BreathID', list(range(1, 201)), max_selections=5) #Input field
         predict_with_breath_id = st.button(":blue[Get prediction]") #Button to get prediction
         if predict_with_breath_id:
             if breath_ids:
@@ -146,7 +146,7 @@ elif page=="Predictor":
 
                 #Start API call
                 for breath_id in breath_ids:
-                    pressure = make_api_request_with_id(breath_id)
+                    api_response = make_api_request_with_id(breath_id)
                     time_step=[ 0.0, 0.0331871509552001, 0.0663647651672363, 0.0997838973999023,
                         0.1331243515014648, 0.1665058135986328, 0.1999211311340332, 0.233269453048706,
                         0.2667148113250732, 0.3001444339752197, 0.3334481716156006, 0.3667137622833252,
@@ -167,15 +167,15 @@ elif page=="Predictor":
                         2.270882368087769, 2.304311990737915, 2.3376832008361816, 2.371119737625122,
                         2.4044580459594727, 2.4377858638763428, 2.471191644668579, 2.504603147506714,
                         2.537960767745972, 2.571407556533813, 2.604744434356689, 2.638017416000366]
-                    df = pd.DataFrame(pressure)
-                    df["time_step"]=time_step
-                    mae = mean_absolute_error(df["actual_pressure"], df["predicted_pressure"])
+                    df_api = pd.DataFrame(api_response)
+                    df_api["time_step"]=time_step
+                    mae = mean_absolute_error(df_api["actual_pressure"], df_api["predicted_pressure"])
 
                     # Create graph using matplotlib
                     fig, ax = plt.subplots()
-                    ax.plot(df["time_step"], df["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
-                    #ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
-                    ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
+                    ax.plot(df_api["time_step"], df_api["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
+                    #ax.plot(df_api["time_step"], df_api["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
+                    ax.plot(df_api["time_step"], df_api["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
 
                     # set y and x label
                     ax.set_ylabel("Pressure")
@@ -190,16 +190,16 @@ elif page=="Predictor":
                     plt.title(f"Mechanical Ventilation Prediction - Breath ID={breath_id}")
 
                     #Add MAE
-                    ratio_max_min = df["actual_pressure"].max()-(df["actual_pressure"].min())
-                    same_size_rectangle = ((df["actual_pressure"].max())-(df["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
-                    rectangle = Rectangle((1.53, df["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
+                    ratio_max_min = df_api["actual_pressure"].max()-(df_api["actual_pressure"].min())
+                    same_size_rectangle = ((df_api["actual_pressure"].max())-(df_api["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
+                    rectangle = Rectangle((1.53, df_api["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
                     ax.add_patch(rectangle)
-                    plt.annotate(f'MAE* = {mae}', xy=(1.6, df["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
+                    plt.annotate(f'MAE* = {mae}', xy=(1.6, df_api["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
 
                     # Add in Streamlit
                     st.pyplot(fig)
                     st.write(" ")
-                st.write("\* **MAE= (Mean Absolute Error)** can be used to measure how close something is from being correct. In our case, **MAE** represents the average difference between actual and predicted pressure. The smaller the better!")
+                st.write("\* **MAE= (Mean Absolute Error)** can be used to measure how close something is from being correct. In our case, **MAE** represents the average difference between actual and predicted api_response. The smaller the better!")
                 st.write(" ")
             else:
                 st.error("Please, don't forget to enter at least one breath_id")
@@ -208,7 +208,7 @@ elif page=="Predictor":
     if button_data_provide == "As a CSV file with all features":
         st.info('2️⃣ Please provide your features as CSV file:') #Title
 
-        up_file = st.file_uploader("Please upload a file with 5 columns: 'R', 'C', 'u_in', 'u_out' and 'pressure'",
+        up_file = st.file_uploader("Please upload a file with at least 4 columns: 'R', 'C', 'u_in' and 'u_out'",
                             type=["csv"]) #Add an if condition if the file is not a csv
         if up_file:
             st.success("File uploaded successfully!")
@@ -230,23 +230,26 @@ elif page=="Predictor":
                 my_bar.empty() #Remove waiting bar
                 st.success('Here are your results 🔽') #Success message
 
-            #Read csv
-            df_to_predict = pd.read_csv(up_file)
+                #Read csv
+                df = pd.read_csv(up_file)
 
-            #API call
-            for i in range(len(df_to_predict)):
-                pressure = make_api_request_with_features(df_to_predict)
+                R = df['R'].values.tolist()
+                C = df['C'].tolist()
+                u_in = df['u_in'].tolist()
+                u_out = df['u_out'].tolist()
+
+                api_response = make_api_request_with_features(R=R, C=C, u_in=u_in, u_out=u_out)
+
                 # will return dict(time_step = time_column, actual_pressure = actual_pressure,predicted_pressure = loaded_model.predict(X).reshape(80))
-                if pressure is not None:
+                if api_response is not None:
 
-                    df = pd.DataFrame(pressure)
-                    mae = mean_absolute_error(df["actual_pressure"], df["predicted_pressure"])
+                    df_api = pd.DataFrame(api_response)
+                    mae = mean_absolute_error(df_api["actual_pressure"], df_api["predicted_pressure"])
 
                     # Create graph using matplotlib
                     fig, ax = plt.subplots()
-                    ax.plot(df["time_step"], df["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
-                    #ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
-                    ax.plot(df["time_step"], df["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
+                    ax.plot(df_api["time_step"], df_api["actual_pressure"], label="Actual Pressure", color='#3c7dc2')
+                    ax.plot(df_api["time_step"], df_api["predicted_pressure"], label="Predicted Pressure", color='#eb8634')
 
                     # set y and x label
                     ax.set_ylabel("Pressure")
@@ -261,18 +264,18 @@ elif page=="Predictor":
                     plt.title(f"Mechanical Ventilation Prediction - Breath ID={breath_id}")
 
                     #Add MAE
-                    ratio_max_min = df["actual_pressure"].max()-(df["actual_pressure"].min())
-                    same_size_rectangle = ((df["actual_pressure"].max())-(df["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
-                    rectangle = Rectangle((1.53, df["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
+                    ratio_max_min = df_api["actual_pressure"].max()-(df_api["actual_pressure"].min())
+                    same_size_rectangle = ((df_api["actual_pressure"].max())-(df_api["actual_pressure"].min()))/(16.7343242500-4.853261668752088)
+                    rectangle = Rectangle((1.53, df_api["actual_pressure"].min()+ratio_max_min*0.6), 0.5, 0.8*same_size_rectangle, fill=True, color='red', alpha=0.2)
                     ax.add_patch(rectangle)
-                    plt.annotate(f'MAE* = {mae}', xy=(1.6, df["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
+                    plt.annotate(f'MAE* = {mae}', xy=(1.6, df_api["actual_pressure"].min()+ratio_max_min*0.615), fontsize=12, color='black')
 
                     # Add in Streamlit
                     st.pyplot(fig)
                     st.write(" ")
-                    st.write("\* **MAE= (Mean Absolute Error)** can be used to measure how close something is from being correct. In our case, **MAE** represents the average difference between actual and predicted pressure. The smaller the better!")
+                    st.write("\* **MAE= (Mean Absolute Error)** can be used to measure how close something is from being correct. In our case, **MAE** represents the average difference between actual and predicted api_response. The smaller the better!")
                     st.write(" ")
 
 
-            else:
-                st.write("API doesnt work")
+                else:
+                    st.error("Problem with the API. Please provide data (R, C, u_in and u_out) with the correct format (80 rows are necessary)")
